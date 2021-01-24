@@ -7,17 +7,14 @@ on:
 
 jobs:
   release:
-    name: 🚀 publish
     runs-on: ubuntu-latest
     steps:
-      - name: 📚 checkout
-        uses: actions/checkout@v2.1.1
-      - name: 🟢 node
-        uses: actions/setup-node@v1.4.2
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
         with:
-          node-version: 12
-          registry-url: https://registry.npmjs.org
-      - name: 🚀 publish
-        run: |
-          echo "NODE_AUTH_TOKEN=${{secrets.NPM_AUTH_TOKEN}}" >> $GITHUB_ENV
-          npm publish --access public
+          node-version: 10
+      - run: npm install
+      - run: npm test
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_AUTH_TOKEN }}
