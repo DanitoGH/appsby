@@ -1,6 +1,6 @@
 {
   "name": "appsby",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Everything you need to make a modern app with Gatsby. Write server functions alongside client code, with an easy and powerful React-style API. Views, search, uploads, all out of the box.",
   "main": "index.js",
   "scripts": {
