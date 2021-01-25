@@ -1,13 +1,17 @@
 {
   "name": "appsby",
-  "version": "0.0.5",
+  "version": "0.0.8",
   "description": "Everything you need to make a modern app with Gatsby. Write server functions alongside client code, with an easy and powerful React-style API. Views, search, uploads, all out of the box.",
-  "main": "index.js",
+  "main": "./public/js/client/index.js",
   "scripts": {
-    "build": "babel src --out-dir . --ignore \"**/__tests__\" --extensions \".ts,.js\"",
+    "build": "webpack",
     "watch": "babel -w src --out-dir . --ignore \"**/__tests__\" --extensions \".ts,.js\"",
     "prepare": "cross-env NODE_ENV=production npm run build"
   },
+  "files": [
+    "./public/js/client/index.js",
+    "./public/js/server/index.js"
+  ],
   "keywords": [
     "gatsby",
     "gatsby-plugin"
@@ -23,8 +27,8 @@
   "devDependencies": {
     "@babel/cli": "^7.11.6",
     "@babel/core": "^7.11.6",
-    "@babel/plugin-proposal-class-properties": "^7.10.4",
-    "@babel/preset-env": "7.8.3",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/preset-env": "^7.8.7",
     "@babel/traverse": "^7.11.5",
     "@sindresorhus/slugify": "^1.1.0",
     "babel-core": "7.0.0-bridge.0",
@@ -53,11 +57,17 @@
     "serverless-offline": "5.12.1",
     "serverless-webpack": "5.3.1",
     "shelljs": "0.8.4",
-    "webpack": "4.41.5",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^4.4.0",
     "webpack-node-externals": "1.7.2"
   },
   "dependencies": {
+    "@babel/plugin-proposal-export-default-from": "^7.12.1",
+    "@babel/plugin-proposal-private-methods": "^7.12.1",
+    "@babel/plugin-transform-modules-commonjs": "^7.12.1",
     "@fingerprintjs/fingerprintjs": "^3.0.0",
+    "@rollup/plugin-babel": "^5.2.2",
+    "@rollup/plugin-node-resolve": "^11.1.0",
     "@tsmx/string-crypto": "^1.0.2",
     "aws-functions": "^1.0.2",
     "aws-sdk": "^2.741.0",
@@ -81,6 +91,7 @@
     "request": "^2.88.2",
     "rereadable-stream": "^1.4.3",
     "retry-axios": "^2.4.0",
+    "rollup": "^2.38.0",
     "s3-readable-stream": "0.0.9",
     "s3-upload-stream": "^1.0.7",
     "serverless-prune-plugin": "^1.4.3",

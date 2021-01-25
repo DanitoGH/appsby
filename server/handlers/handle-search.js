@@ -1,4 +1,3 @@
-import FlexSearch from "flexsearch";
 import { performAuthentication } from "./handle-auth";
 import {createReturnObject} from "../helpers/createReturnObject";
 

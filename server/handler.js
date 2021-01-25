@@ -32,75 +32,81 @@ const RESOURCE_MAP = {
 // eslint-disable-next-line import/prefer-default-export
 export async function resolve(event) {
 
-  return Promise.resolve()
-      .then(() => {
-        if (event.httpMethod && event.resource) {
-          // eslint-disable-next-line no-param-reassign
+  async function eventify() {
+    if (event.httpMethod && event.resource) {
+      // eslint-disable-next-line no-param-reassign
 
-          let resourceName = event.requestContext.path.replace("/", "");
+      let resourceName = event.requestContext.path.replace("/", "");
 
-          let resource = RESOURCE_MAP[resourceName];
-          let resourceMethod = resource && resource[event.httpMethod];
-          let rejectBasedOnHeaderOrigin = true;
-          if (!resourceMethod) {
-            //If it's not pointing to a normal resource, try adding the webhooks
-            let webHook = global.appsbyWebhooks.find(x => x.endpoint === resourceName);
-            if (!webHook || event.httpMethod === "GET") {
-              return Promise.reject(new Error('[404] Route Not Found'));
-            }
-            rejectBasedOnHeaderOrigin = false;
-            resourceMethod = webHook.handler
-          }
-
-          if (rejectBasedOnHeaderOrigin && process.env.websiteAddress) {
-            let originalDomain = event.headers.origin.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "");
-            let parseResult = parseDomain(originalDomain);
-            let parseResultGuarantee = parseDomain(process.env.websiteAddress)
-            if (parseResult.type === ParseResultType.Listed) {
-              const {icann} = parseResult;
-              let icannGuarantee = parseResultGuarantee.icann;
-              let origin = icann.domain + "." + icann.topLevelDomains.join(".")
-              let originGuarantee = icannGuarantee.domain  + "." + icannGuarantee.topLevelDomains.join(".")
-              if (origin !== originGuarantee) {
-                return Promise.reject(new Error('[401] Outside domain'));
-              }
-            } else if (process.env.NODE_ENV === "development") {
-              if(originalDomain.includes("localhost")) { process.env.websiteAddress = "localhost" } else {
-                process.env.websiteAddress = originalDomain;
-              }
-            } else {
-              return Promise.reject(new Error('[401] Outside domain'));
-            }
-
-          }
-
-          if (event.resource === "logout") {
-            return
-          }
-
-          return resourceMethod(event);
-        } else if (event.records) {
-          return S3Callback(event);
+      let resource = RESOURCE_MAP[resourceName];
+      let resourceMethod = resource && resource[event.httpMethod];
+      let rejectBasedOnHeaderOrigin = true;
+      if (!resourceMethod) {
+        //If it's not pointing to a normal resource, try adding the webhooks
+        let webHook = global.appsbyWebhooks.find(x => x.endpoint === resourceName);
+        if (!webHook || event.httpMethod === "GET") {
+          throw new Error('[404] Route Not Found');
         }
-        console.log('UNKNOWN EVENT', event);
-        return {};
-      })
-      .then(res => {
+        rejectBasedOnHeaderOrigin = false;
+        resourceMethod = webHook.handler
+      }
 
-        if (event.httpMethod === "GET"){
-          sendProxySuccessRedirect.bind()
-        }
-        else {
-          if (event.resource === "logout"){
-            sendProxyLogout.bind();
-          } else {
-            sendProxySuccess.bind()
+      if (rejectBasedOnHeaderOrigin && process.env.websiteAddress) {
+        let originalDomain = event.headers.origin.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "");
+        let parseResult = parseDomain(originalDomain);
+        let parseResultGuarantee = parseDomain(process.env.websiteAddress)
+        if (parseResult.type === ParseResultType.Listed) {
+          const {icann} = parseResult;
+          let icannGuarantee = parseResultGuarantee.icann;
+          let origin = icann.domain + "." + icann.topLevelDomains.join(".")
+          let originGuarantee = icannGuarantee.domain  + "." + icannGuarantee.topLevelDomains.join(".")
+          if (origin !== originGuarantee) {
+            throw new Error('[401] Outside domain');
           }
+        } else if (process.env.NODE_ENV === "development") {
+          if(originalDomain.includes("localhost")) { process.env.websiteAddress = "localhost" } else {
+            process.env.websiteAddress = originalDomain;
+          }
+        } else {
+          throw new Error('[401] Outside domain');
         }
 
-        if (event.httpMethod === "GET") {
-          sendProxyErrorDynamicPage.bind() } else { sendProxyError.bind() }
-      }); // eslint-disable-line
+      }
+
+      if (event.resource === "logout") {
+        return
+      }
+
+      return resourceMethod(event);
+    } else if (event.records) {
+      return S3Callback(event);
+    }
+    console.log('UNKNOWN EVENT', event);
+    throw new Error("[404]");
+  }
+
+  try {
+    let coverage = await eventify();
+
+    if (event.httpMethod === "GET"){
+      console.log("why do this");
+      return sendProxySuccessRedirect(coverage)
+    }
+    else {
+      if (event.resource === "logout"){
+        return sendProxyLogout(coverage)
+      } else {
+        return sendProxySuccess(coverage)
+      }
+    }
+
+  } catch (e) {
+    if (event.httpMethod === "GET"){
+      return sendProxyErrorDynamicPage(e)
+    } else {
+      return sendProxyError(e)
+    }
+  }
 }
 
 const sendProxySuccessRedirect = (responseObj) => {
