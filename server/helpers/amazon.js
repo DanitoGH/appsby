@@ -1,7 +1,7 @@
-import AWS from 'aws-sdk';
-import {v4 as uuidv4} from "uuid";
+import {GetObjectCommand, HeadObjectCommand, S3Client} from '@aws-sdk/client-s3';
+import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import remove from "confusables";
-
 const streamingS3 = require('streaming-s3');
 const S3ReadableStream = require("s3-readable-stream");
 const { Converter } = require("ffmpeg-stream")
@@ -17,7 +17,7 @@ var s3Credentials = {
 
 // eslint-disable-next-line import/prefer-default-export
 export function generateS3() {
-    return new AWS.S3({
+    return new S3Client({
         region: 'us-east-1',
         signatureVersion: 'v4',
         accessKeyId: s3Credentials.accessKeyId,
@@ -90,7 +90,7 @@ export async function GenerateUploadKey(uuid, amazonMetadata, fileTypes, bucketN
         amzObject.Conditions.push(["eq", `$x-amz-meta-${key}`, value]);
     })
 
-    const data = await s3.createPresignedPost(amzObject);
+    const data = await createPresignedPost(amzObject);
 
     data.fields["x-amz-meta-appsbyuserid"] = userId; // Don't forget to add this field too
     data.fields["x-amz-meta-appsbyusertype"] = userType;
@@ -112,13 +112,13 @@ export async function GenerateUploadKey(uuid, amazonMetadata, fileTypes, bucketN
 
 export async function GenerateDownloadKey(bucket, key) {
     const s3 = generateS3();
-    return s3.getSignedUrl('getObject', {Bucket: bucket, Key: key, Expires: 3600});
+    return getSignedUrl(s3, new GetObjectCommand({Bucket: bucket, Key: key}), {expiresIn: 3600});
 }
 
 export async function AppsbyMoveFileBetweenBuckets(previousBucket, previousKey, nextBucket, nextKey, deletePreviousFile = false, dataTransformer = null) {
     const s3 = generateS3();
 
-    let existingMeta = (await s3.headObject({Bucket: previousBucket, Key: previousKey}).promise()).Metadata;
+    let existingMeta = S3GetMetadata(previousBucket, previousKey);
 
     //Stream the existing file in from S3 bucket
     const stream = new S3ReadableStream(s3, {Bucket: previousBucket, Key: previousKey});
@@ -168,7 +168,6 @@ export async function AppsbyMoveFileBetweenBuckets(previousBucket, previousKey, 
                     existingMeta.appsbyfilemime = result.mime;
                     existingMeta.appsbyfileextension = result.ext;
 
-                    //We are now going to stream our upload back to S3 (probably as a new key and into a new bucket)
                     //We're using our re-wound stream to do this
                     let uploader = new streamingS3(rewound, {
                         accessKeyId: s3Credentials.accessKeyId,
@@ -242,10 +241,15 @@ export async function MagicByteFileType(buffer) {
 
 export async function S3CheckIfFileExists(bucketName, key){
     let s3 = generateS3();
-    return await s3
+    return await s3.send(new HeadObjectCommand({Bucket: bucketName, Key: key})).then(() => true, err => {
+        if (err.code === 'NotFound') {
+            return false;
+        }
+        throw err;
+    })
+    /*return await s3
         .headObject({
-            Bucket: bucketName,
-            Key: key,
+
         })
         .promise()
         .then(
@@ -256,12 +260,13 @@ export async function S3CheckIfFileExists(bucketName, key){
                 }
                 throw err;
             }
-        );
+        );*/
 }
 
 export async function S3GetMetadata(bucketName, key){
     let s3 = generateS3();
-    let res = await s3.headObject({Bucket: bucketName, Key: key,}).promise();
+    //let res = await s3.headObject({Bucket: bucketName, Key: key,}).promise();
+    let res = await s3.send(new HeadObjectCommand({Bucket: bucketName, Key: key}));
     return res.Metadata;
 }
 

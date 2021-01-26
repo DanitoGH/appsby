@@ -15,7 +15,6 @@
           "node": true
         }
       }
-    ],
-    ["babel-preset-gatsby-package", { "browser": true }]
+    ]
   ]
 }

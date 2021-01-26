@@ -1,45 +1,66 @@
 <p align="center">
-  <a href="https://www.gatsbyjs.com">
-    <img alt="Gatsby" src="https://www.gatsbyjs.com/Gatsby-Monogram.svg" width="60" />
+  <a href="http://www.audallabs.com">
+    <img alt="Audal Labs Logo" src="https://static.audallabs.com/logodark.png" width="90" />
   </a>
 </p>
 
-<h1>Appsby</h1>
-<h4>Full-stack, serverless apps with easy, React-style declarative syntax.</h4>
-<i>Uses Serverless Framework. Netlify/Vercel Functions support coming soon.</i>
-<br/>
-<br/>
+<h1 align="center">Appsby</h1>
 
-**Turn your Gatsby site (or since 0.03 any React site) into an easy-to-code and super-scalable full-stack app.** No need to worry about your server, or your database, or your site speed. Includes everything you need to create great apps fast. Very MVVMish.
+<h4 align="center">Full-stack, server-less apps that are fast to build ⏰ and run everywhere 🏃‍.</h4>
 
-* Build your client logic with Gatsby/CRA/Next.js/any other React-based front-end
-* Build complex server logic just like a React component
-* Includes full-text search and smart S3 file handling
-* Auth included, or easily build your own
-* Deploy front-end wherever. Deploy backend via Serverless Framework. Netlify/Vercel Functions support coming soon.
+<pre align="center">npm i appsby</pre>
 
-It's high-performance and high-functionality full-stack with nothing more than the JAMStack.
+#### Why build this?
+- Building Lambdas for JAMStack apps can feel archaic when you're used to using beautiful, declarative tools everywhere else. 
+- Traditional Node frameworks like Express aren't built for Lambda environments, and don't include cloud functionality out of the box.
+- Using Netlify or Vercel to create any non-trivial backend currently requires a stupid amount of time and a tonne of your own tooling.
+- Serverless Framework is great to build with, but introduces a lot of extra complexity.
+- Give startups and small orgs a framework that's fast to execute, and faster to build with than anything currently available.
 
-###Why this project?
-Managing clients, servers, and cloud functionality can be complex and fraught with issues for small teams. Code duplication, dead code, a mess of API endpoints and Axios requests - you get the idea.
-Plus add in multiple repos, complex build and deploy processes, containerization for no good reason and then your development cycles can feel like trying to stop the Titanic sinking.
+#### What can I do with this?
+- Build your Lambda-based NodeJS back-end fast
+- Build your front-end fast (and with any framework)
+- Avoid dealing with databases
+- Avoid the expenses of Firebase or AppSync
+- Avoid implementing typical boilerplate
 
-Appsby simplifies this. Write your front-end, back-end, and cloud file handling at the same time, in the same project, with almost identical ES6-based syntaxes. Share code between server and client components without writing and deploying private NPM/Bit packages. Have one team, where anyone can work on anything within the app, instead of dedicated front-end and back-end people.
+#### What does it do?
+- Replaces ExpressJS and other similar frameworks for server-less Lambda-based environments
+- Gives you a super simple way to implement common app features (auth, views, apis, search, file upload/download)
+- Automatically implements your database from your code, using Fauna Cloud NoSQL DB as your backing store
+- Takes care of requests, caching, invalidation on the front-end (you can probably ditch your Global State Manager)
 
-###How does it work?
-Almost every app on the planet is a Master/Detail style app, that needs CRUD, file handling, auth, and search. Appsby implements this. Everything else is up to you. If you need things like complex data crunching, do it in WebAssembly and add to server or client as you wish.
-
-###Where do I sign up?
-1. `npm -i -g appsby`
-2. Signup for FaunaDB, create a database, get your secret key.
-3. Sign up for AWS, create an unrestricted IAM profile, get your public/private key pair.
-4. Run `appsby bootstrap`. This will place a folder called `server` into your project root.
-5. Open the `server` folder's `handler.js` and add your keys. You'll eventually define your server pages in here. It's well-commented, so don't get scared.
-6. Open the bootstrapped `serverless.yml` and modify it to accommodate your setup.
-7. Exclude `appsby` from your SSR/SSG webpack config. Some packages Appsby relies on use `window` - which breaks most SSR/SSGs. If you're using Gatsby, add Appsby to your Gatsby Config Plugins and this will happen automatically.
-8. ???
-9. Profit/Maybe just sleep easier.
+#### How do I do it?
+- ES6 Classes that work like React Components, plus a few lines in your Lambda Function Handler
+- Use the in-built front-end functions to handle your requests
+- Deploy to any Lambda-based Cloud Provider (AWS, Serverless.com, Netlify, Vercel, probably more)
 
 
-####Acknowledgements:
+#### I use GCP/Cloudflare/other function provider...
+- Appsby doesn’t use any tech specific to AWS, but it expects requests to be delivered in AWS Lambda Format
+- You’ll need to build a function to remap your function provider’s request object to AWS Lambda format
+- File operations are locked to S3 format. Feel free to use any provider that uses an S3-style API.
+
+#### Deciding between AWS/Serverless.com and Netlify/Vercel:
+- Appsby can optionally use S3 bucket triggers for running your code
+- This is usually done post-upload if you have some data crunching to do
+- Netlify/Vercel don’t give you ability to trigger functions in this manner
+- There is a client-triggered event that will run post-upload, so many workflows won’t need this
+
+#### Roadmap to v1:
+- Slim down the dependency list to only essentials
+- Reduce package size further
+- Refactors for tidying
+- Starter projects for Gatsby, Next and Serverless as API
+- Write guides
+
+#### Acknowledgements:
 Dicky Suryadi / DotNetify: This project draws substantial inspiration from Dicky's fantastic ASP.NET package, especially the view creation and state hydration system.
+
+<h3 align="center">Things you'll need...</h3>
+
+- FaunaDB account, with a new database and an API key
+- AWS access/secret keys for managing S3 file operations
+- SMTP mail account, if you want to use built in Nodemailer
+- Some sort of infra that can run Lambdas
+- A .babelrc that transpiles your ES6+ code
