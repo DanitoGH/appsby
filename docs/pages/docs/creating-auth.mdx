@@ -1,0 +1,88 @@
+import TutorialsIntro from '../../partials/tutorials-intro.mdx'
+import TutorialsDefaultConstructor from '../../partials/tutorials-default-constructor.mdx'
+
+# Creating Auth
+Like everything in Appsby, authentication is easy to build. You can have multiple authenticators, different user documents, and different parameters for each one.
+
+<TutorialsIntro fileType="authenticator" folder="login" clientSnippet="new AppsbyAuthConnection('login')" initializeName="this.auth"/>
+
+
+### Logging in
+In our client, we might have an input field for an email address, and an input field for a password. We can have anything really - what parameters you base your authentication on are completely up to you.
+We'll probably also have a button, that says **Log In**, so that our user can log in.
+
+In order to authenticate the user using the ```AppsbyAuthConnection``` we previously set-up as ```this.auth```, when our login button is clicked we do the following:
+```js
+this.auth.login({connectionParameters});
+```
+
+As stated before, our connection parameters can be anything, but in this case, we're just going to send our user's email and password as connection parameters. Imagining that we're saving the user's email and password inside ```this.state```, we do this as:
+```js
+this.auth.login({email: this.state.email, password: this.state.password});
+```
+This will send the connection parameters to the server (along with some internal Appsby data for tracking users and maintaining your app's security). We can then check if a user can login on the server.
+
+## Open ```app-pages/edit/auth.js```
+You can see that we have 2 functions:
+- ```constructor(connectionParameters)```
+- ```verifyLogin()```
+
+<TutorialsDefaultConstructor/>
+
+### ```async verifyLogin()```
+When checking to see if a user's ```connectionParameters``` will result in a successful login, Appsby calls ```async verifyLogin```(). It's an asynchronous function that should contain your business logic for verifying if a successful login has been made. It then should return a true or false result on whether the login has been successful or not.
+How might we do this?
+```js
+import passwordHash from 'pbkdf2-password-hash';
+
+verifyLogin = async () => {
+  if (passwordHash.compare(this.state.document.password, this.props.connectionParameters.password)){
+      return true;
+  }
+  return false;
+};
+```
+
+In this scenario, we save a password hash of the user using PBKDF2 to our user document on registration. Then we import the ```pbkdf2-password-hash``` package to verify our user's submitted password to the hashed version that's saved in our user document.
+
+If it matches up, we return true and the user will be issued a login, or if it's not, we return false and they won't be.
+
+### ```async verifySubsequently()```
+If you have users that abuse your service, use profanity, or engage in other behaviour you deem to be unsavoury you may want to ban them. Or maybe you want to do something else to verify on subsequent requests after login that a user still has access (maybe check that they've made their SaaS payment for the month). You can accomplish these tasks by using ```verifySubsequently()```, which is called for all requests after a user logs in.
+```js
+import passwordHash from 'pbkdf2-password-hash';
+
+verifySubsequently = async () => {
+  if (this.props.user.isBanned === true){
+      return false;
+  }
+  return true;
+};
+```
+
+In this scenario, we query our user document for a property called ```isBanned``` to check if a user is banned. If they are banned, we return false, saying that no the login should not proceed.
+If they are not banned, we return true.
+
+
+## Logging a user out
+
+Once our user is done with their session, we can log them out. We don't need to write any specific server code for this, we just need to perform a simple operation on any of our app's client pages.
+
+You might want to add a log out button to a menu, so get your menu component, and add a new button. On click, the button should perform the function:
+
+```js
+Appsby.logout('authEndpointName', '/')
+```
+
+In this scenario, ```authEndpointName``` is the name of the folder the auth endpoint resides in (in our case ```login```).
+Appsby will then logout the user, and redirect them to ```'/'```, as specified by our second argument, which is probably our home page.
+
+
+### Handling weirdness and edge-cases
+
+So what happens if you manually delete a user's account while they're logged in, if they try to move their token to another browser (to use a bot), or their token is stolen?
+
+- All Appsby tokens are locked to a singular web browser on a singular machine. Appsby's authentication scheme uses device fingerprinting internally to prevent tokens from being shared, re-used, and stolen. Each individual token is linked to a Session which is tracked by Appsby.
+- Appsby tokens always last for a set period of time before expiring. Every time a user performs an action within your app, their token is refreshed, but if they do not use the app for a certain period of time, their token will expire.
+- Appsby always loads the user document before other data for every type of server-side process. If the user's account has been deleted, Appsby will throw an error (elegantly), and the user will not be able to continue.
+

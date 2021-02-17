@@ -27,9 +27,15 @@ build/Release
 node_modules
 *.un~
 yarn.lock
-src
 flow-typed
 
 decls
 examples
 .idea
+
+docs
+.babelrc
+webpack.config.js
+.github
+appsby-cli
+setup

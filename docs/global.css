@@ -1,0 +1,67 @@
+body {
+    font-family: "Inter"!important;
+}
+
+img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+header {
+
+}
+
+#firstSecHome::before {
+    content: "";
+    background-image: url("https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/363-mj-5798.jpg?w=1300&dpr=1&fit=default&crop=default&q=80&vib=3&con=3&usm=15&bg=F4F4F3&ixlib=js-2.2.1&s=86788a2d49abfa34fd652548e7225be7");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width:100%;
+    height: 100%;
+    background-color: #ffc300;
+    background-blend-mode: lighten;
+}
+
+#firstSecHome {
+    background-color: var(--xstyled-colors-background,#fff)!important;
+    position: relative;
+    text-align: center;
+    color:#000!important;
+}
+
+#firstSecHome h1 {
+    font-size: 92px;
+    letter-spacing: -5px;
+    line-height: 0.9;
+    margin-bottom: -50px;
+    padding-top: 10vh;
+    font-weight: 800;
+}
+
+#firstSecHome div{
+    z-index: 1;
+    position: relative;
+}
+
+.anchor {
+    display: none;
+}
+
+pre {
+    padding: 10px 0;
+    box-shadow: 0px 4px 15px #4447;
+}
+
+.fiUHSH pre code{
+    background-color: transparent!important;
+    color: #fff!important;
+}
+
+.cgTVEc {
+    padding: 12px;
+    background-color: var(--xstyled-colors-background,#fff);
+}

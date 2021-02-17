@@ -1,20 +1,53 @@
 {
-  "comments": false,
-  "sourceMaps": "both",
-  "plugins": [
-    "source-map-support",
-    "@babel/plugin-proposal-class-properties",
-    "@babel/plugin-proposal-private-methods",
-    "@babel/plugin-proposal-export-default-from"
-  ],
-  "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "targets": {
-          "node": true
-        }
-      }
-    ]
-  ]
+  "env": {
+    "development": {
+      "presets": [
+        ["@babel/preset-env", {
+          "targets": {
+            "node": "6.10"
+          }
+        }]
+      ],
+      "plugins": [
+        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-proposal-private-methods",
+        "@babel/plugin-proposal-export-default-from",
+        "@babel/plugin-proposal-object-rest-spread"
+      ]
+    },
+    "browser": {
+      "presets": [
+        ["@babel/preset-env", {
+          "targets": {
+            "browsers": "last 2 versions"
+          },
+          "modules": false
+        }]
+      ],
+      "plugins": [
+        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-proposal-private-methods",
+        "@babel/plugin-proposal-export-default-from",
+        "@babel/plugin-proposal-object-rest-spread"
+      ]
+    },
+    "module": {
+      "presets": [
+        ["@babel/preset-env", {
+          "targets": {
+            "node": "6.10"
+          },
+          "modules": false
+        }]
+      ],
+      "plugins": [
+        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-proposal-private-methods",
+        "@babel/plugin-proposal-export-default-from",
+        "@babel/plugin-proposal-object-rest-spread"
+      ]
+    }
+  },
+  "sourceMaps": false,
+  "comments": false
 }

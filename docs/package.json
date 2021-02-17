@@ -1,0 +1,23 @@
+{
+  "name": "smooth-doc-starter",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "gatsby develop",
+    "develop": "gatsby develop",
+    "build": "gatsby build",
+    "serve": "gatsby serve"
+  },
+  "dependencies": {
+    "@mdx-js/tag": "^0.20.3",
+    "@mdx-js/mdx": "^1.6.22",
+    "gatsby": "^2.31.1",
+    "gatsby-plugin-google-fonts": "^1.0.1",
+    "gatsby-source-jsdoc": "^0.2.4",
+    "gatsby-transformer-documentationjs": "^4.9.0",
+    "gatsby-transformer-remark": "^2.15.0",
+    "react": "^16.10.1",
+    "react-dom": "^16.10.1",
+    "smooth-doc": "^5.1.1"
+  }
+}

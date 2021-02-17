@@ -1,0 +1,121 @@
+---
+slug: /
+---
+
+import {
+    Article,
+    ScreenContainer,
+    Button,
+    HeroSection,
+    Hero,
+    HeroBody,
+    HeroTitle,
+    HeroTeaser,
+    HeroActionList,
+    HeroAction,
+    FeatureSection,
+    FeatureList,
+    Feature,
+    FeatureTitle,
+    FeatureText,
+    FeatureImage,
+    SiblingNav,
+    SiblingNavLink,
+} from 'smooth-doc/components'
+import { graphql, useStaticQuery, Link } from 'gatsby'
+import heroBackgroundURL from '../images/undraw_going_up_ttm5.svg'
+import GettingStarted from './docs/index.mdx'
+
+
+<HeroSection id="firstSecHome">
+
+<ScreenContainer>
+    <h1>Serverless Node<br/> made easy.</h1>
+    <div className="fiUHSH">
+        <pre style={{width: "70%", margin: "auto", textAlign: "center"}}>
+            <code>
+npx gatsby-cli new app https://github.com/audal/appsby-starter
+
+                </code>
+        </pre>
+    </div>
+        <div style={{fontSize: "26px", letterSpacing: "-1px", margin: "auto", paddingBottom: "5vh"}}>
+            <p>Appsby helps Gatsby teams turn front-end projects into <u>complex + fully-featured NodeJS apps</u>, <br/><b>without implementing ops, or databases, or search, or file handling.</b></p>
+            <p>It's what you've always wanted from the JAMStack.</p>
+        </div>
+
+        <p>
+            <Button variant="primary">View the docs</Button>
+        </p>
+</ScreenContainer>
+</HeroSection>
+<FeatureSection>
+    <FeatureList>
+        <Feature>
+            <FeatureImage />
+            <FeatureTitle>Like React. But on the server.</FeatureTitle>
+            <FeatureText>
+                Appsby's APIs have been designed from the ground up to be easy for React + Gatsby devs. Fetch, transform, and sanitize your data with syntax that feels like React, but runs on the server. Then add some of Appsby's syntactic sugar to make your CRUD more intelligent and efficient.
+            </FeatureText>
+        </Feature>
+        <Feature>
+            <FeatureImage />
+            <FeatureTitle>Forget the database.</FeatureTitle>
+            <FeatureText>
+                Appsby directly integrates with the new standard for document databases, FaunaDB, to programmatically manage everything you need to do within your app. No more complex drivers, no more SQL. Just add your credentials and get going.
+            </FeatureText>
+        </Feature>
+        <Feature>
+            <FeatureImage />
+            <FeatureTitle>Full-text, typo-tolerant search.</FeatureTitle>
+            <FeatureText>
+                Appsby comes with fully-customizable search baked in, integrated client-side with your choice of pagination or infinite scrolling. Just pick your data source and create a schema, then Appsby will do all the heavy lifting for you. Now you can ditch Algolia and their ridiculous fees.
+            </FeatureText>
+        </Feature>
+        <Feature>
+            <FeatureImage />
+            <FeatureTitle>S3-backed uploads, and then some.</FeatureTitle>
+            <FeatureText>
+                Appsby gives you the best out of the box cloud-based user file management system. Let users upload files, then validate them, then process them with a potentially infinite number of callbacks as you move data around S3. Control file permissions with your own logic on both the upload and download.
+            </FeatureText>
+        </Feature>
+        <Feature>
+            <FeatureImage />
+            <FeatureTitle>File system routing.</FeatureTitle>
+            <FeatureText>
+                Appsby provides the same file system-style routing you know from Gatsby. Just nest your pages inside the new 'app-pages' folder like you would in Gatsby, and the client and server endpoints will be automatically created for you.
+            </FeatureText>
+        </Feature>
+        <Feature>
+            <FeatureImage />
+            <FeatureTitle>Auth is easy.</FeatureTitle>
+            <FeatureText>
+                Appsby ships with solid auth out of the box. Fingerprinting browsers, tracking sessions, and managing multi-credential areas is done for you. Just define your user accounts and how you want users to access them.
+            </FeatureText>
+        </Feature>
+        <Feature>
+            <FeatureImage />
+            <FeatureTitle>Serverless <u>and</u> real-time.</FeatureTitle>
+            <FeatureText>
+                Websockets + push notifications are supported out of the box provide the real-time app experience your users want. Just decide where you want them in your app, and then enable them - Appsby will handle the rest.
+            </FeatureText>
+        </Feature>
+        <Feature>
+            <FeatureImage />
+            <FeatureTitle>Minimize tech debt.</FeatureTitle>
+            <FeatureText>
+                Appsby's consistent API and React-like syntax improve your productivity while keeping your code concise. That means when it comes time to revise code, smells are minimised, and black-box anti-patterns are all but avoided.
+            </FeatureText>
+        </Feature>
+    </FeatureList>
+</FeatureSection>
+<ScreenContainer forwardedAs="section" py={5}>
+    <Article>
+        <GettingStarted />
+        <SiblingNav>
+            <SiblingNavLink type="next" to="/docs/getting-started/">
+                Read full documentation
+            </SiblingNavLink>
+        </SiblingNav>
+    </Article>
+</ScreenContainer>

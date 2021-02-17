@@ -19,7 +19,7 @@
 
 #### What can I do with this?
 - Build your Lambda-based NodeJS back-end fast
-- Build your front-end fast (and with any framework)
+- Build your front-end fast (and with any React-based framework)
 - Avoid dealing with databases
 - Avoid the expenses of Firebase or AppSync
 - Avoid implementing typical boilerplate
@@ -48,6 +48,7 @@
 - There is a client-triggered event that will run post-upload, so many workflows won’t need this
 
 #### Roadmap to v1:
+- Introduce compatibility with other UI Frameworks
 - Slim down the dependency list to only essentials
 - Reduce package size further
 - Refactors for tidying
@@ -63,4 +64,3 @@ Dicky Suryadi / DotNetify: This project draws substantial inspiration from Dicky
 - AWS access/secret keys for managing S3 file operations
 - SMTP mail account, if you want to use built in Nodemailer
 - Some sort of infra that can run Lambdas
-- A .babelrc that transpiles your ES6+ code

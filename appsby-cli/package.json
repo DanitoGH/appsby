@@ -1,0 +1,50 @@
+{
+  "name": "appsby-cli",
+  "description": "The official Appsby CLI - The global-scale micro-framework for Lambda",
+  "version": "0.0.0",
+  "author": "verystack @verystack",
+  "bin": {
+    "appsby": "./bin/run"
+  },
+  "bugs": "https://github.com/audal/appsby-cli/issues",
+  "dependencies": {
+    "@oclif/command": "^1.8.0",
+    "@oclif/config": "^1.17.0",
+    "@oclif/plugin-help": "^3.2.1",
+    "cli-ux": "^5.5.1"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.26.0",
+    "globby": "^10.0.2",
+    "rimraf": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json",
+    "/src"
+  ],
+  "homepage": "https://github.com/audal/appsby-cli",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "src/index.js",
+  "oclif": {
+    "commands": "./src/commands",
+    "bin": "appsby",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "repository": "audal/appsby-cli",
+  "scripts": {
+    "postpack": "rimraf oclif.manifest.json",
+    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "test": "echo NO TESTS",
+    "version": "oclif-dev readme && git add README.md"
+  }
+}

@@ -33,3 +33,7 @@ dist
 
 /*.js
 !index.js
+
+dist
+lib
+module

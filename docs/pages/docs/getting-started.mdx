@@ -1,0 +1,37 @@
+# Let's setup
+Before we can start our first project, we need to setup our environment and download all the important files. Let's do that now.
+
+## Getting Started
+
+First, we need to set up our machine for development.
+- Node.js is essential for running both Appsby apps and the build tools Appsby and Gatsby use. If you don't have it installed, install it from [here](https://nodejs.org/en/). You'll need at least version 12 in order to emulate the AWS environment that published Appsby apps run under.
+- If you're on Windows and using Visual Studio, you might want to consider downloading an alternative IDE that handles Full-Stack Javascript projects better. A good IDE will help you save time and learn the inner workings of packages easier. Appsby was developed with JetBrains tools (CLion - we do a lot of WebAssembly). A popular free alternative is Visual Studio Code.
+
+
+### Create your new app
+
+The easiest way to start a new Appsby project is to use the Gatsby starter. It generates a ready-to-use project with all needed dependencies.
+
+```bash
+npx gatsby-cli new app https://github.com/audal/appsby-starter
+```
+
+You may also add Appsby to your existing Gatsby project, via ```npm install appsby``` and adding Appsby to your Gatsby Plugins, but this is **not** the recommended way for new users. If you must do this, please [check the Github demo repo](https://github.com/audal/appsby-starter) to see what additional configuration your project might need to make it run.
+
+### Change directories
+
+After our starter project has installed, we can use ```cd``` to change directories into the project folder.
+
+```bash
+cd app
+```
+
+### Start the dev server
+
+Now we can start our development server, so we can have a look around!
+
+```bash
+npm run develop
+```
+
+Gatsby will start a hot-reloading development environment accessible by default at [http://localhost:8000](). You can navigate here to view your brand new app.

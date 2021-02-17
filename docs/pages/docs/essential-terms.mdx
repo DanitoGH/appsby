@@ -1,0 +1,171 @@
+# Essentials
+Appsby is very similar to React, Gatsby, and normal ES6+ Javascript. But it does have some specific terminology and file naming conventions. Learning it will make reading the docs easier, and prevent headaches later.
+
+## Routing
+
+Your app lives in the ```app-pages``` folder of your Gatsby project. This folder is similar to the regular ```pages``` folder in that Appsby will automatically create file-system routing for pages within it, but different in some key ways. The following shows how you might name files/folders for a ```discover``` page.
+- ```app-pages/discover/``` - This is the folder which will hold our client script, server script, and other Appsby features.
+- ```app-pages/discover/client.js``` - This is the file which will be served when a user visits [https://yourwebsite.com/discover]().
+- ```app-pages/discover/server.js``` - This is the server file which your client code will probably interact with.
+- ```app-pages/discover/search.js``` - This is the server-side search file which your client code might use to search for a specific document on your database.
+- ```app-pages/discover/files.js``` - This will allow you to connect your client to server-side file upload/download and processing, specific to your ```discover``` endpoint.
+
+You might also want to authenticate your app. Routing is a key part of Appsby's authentication. This is how you would do it:
+- ```app-pages/auth.js``` - This will authenticate all
+
+## Everything is a class
+In Appsby, all of your server-side Appsby components (view, search, filesystem, etc) should be represented as classes. This will make your code easier for others to understand, and help with decoupling shared concerns. As a by-product, you'll get more familiar with Appsby, faster, due to it's syntactical similarity with React's class components and clear lifecycle.
+
+## Everything is a document
+Just like in other document databases and the frameworks that interface with them, almost everything is a document in Appsby. Your user is a document. Their sessions are documents. Their posts, or projects, or save files - all documents.
+Therefore, Appsby assumes that most of your web app functions will be based around creating, reading, updating and deleting some form of documents - and as such, implements some helper methods, available in your Appsby components to automatically load and perform CRUD operations on documents via certain parameters.
+
+### Understanding the role of state and props in Appsby
+In order to load and transform data inside Appsby, we need to use `state` and `props`. Appsby implements `state` and `props` in ways that are slightly different to React, but make more sense in the context of serverless computing.
+
+All methods are considered state-less, until they load a document. Documents in Appsby are seen as stateful, and as such, when a document is loaded, it is loaded directly into the state. When state-saving methods are called on documents (such as `setState()` or Appsby Auto-Save), changes in the document's state will be persisted in the database.
+
+In Appsby, state and props are not available in the constructor. Instead, the constructor is used to tell Appsby how to get the correct document. After it has found the correct document, it becomes available via ```this.state```, and its immutable metadata becomes available via ```this.props```. **Just like in React, state is mutable but props are not.**
+
+The following is a run-down on how we can use `state` and `props` inside a server-side view model (Appsby's view component) to automatically load a document and edit it. You will have similar workflows in every component (just slightly tweaked to account for the component's specific functionality).
+
+### Using `useDocument(documentType, documentIdOrQualifiers, shouldAutoSave)`
+The `useDocument()` function in Appsby takes away the difficulty of loading documents. The method takes two required arguments, and one optional argument, which will load the document we need at any stage during our component lifecycle.
+- `documentType` - the type of document you want to get.
+- `documentIdOrQualifiers` - this sets how we will fetch the correct document once type has been established. If you pass it a string, it will find a document via it's internal and immutable document ID, and if you pass it an object, it will search Fauna indexes for the match of one or multiple key/value pairs. You might use this if you need to find a user via their email address, or want to find a document via multiple fields of qualification. Notation is \{ field: x \}.
+- `shouldAutoSave` - when this is set to true, Appsby will turn on Auto-Save features, which can make updating documents easier for you. By default it is set to false. You can read more on Auto-Save further down this page.
+
+### Inside the class after `useDocument(documentType, documentIdOrQualifiers, shouldAutoSave)`
+After `useDocument()` has been called, the following state and props will be available to you. Every time `useDocument()` is called, these will update to reflect the latest data.
+- `this.state` - the loaded document.
+- `this.props.autoSave` - whether auto-save for the document was turned on.
+- `this.props.documentId` - the loaded document's internal ID.
+- `this.props.documentType` - the loaded document's type.
+
+### Additional fields to set `constructor(connectionParameters)`
+- You ma
+
+### Inside the class after construction
+After the class has been constructed and the document loaded, we can now access the document and it's metadata through the class scoped objects `state` and `props` and their keys. We also have access to the non-stateful but mutable prop `autoSave` via its own designation. You can expect the following data to be available once a component has been constructed:
+- `this.state` - the loaded document.
+- `this.autoSave` - use this to over-ride whatever auto-save functionality you provided in getInitialState, on a per-function basis.
+- `this.props.documentId` - the loaded document's internal ID.
+- `this.props.documentType` - the loaded document's type.
+- `this.props.user` - the document related to the user trying to access the current document. Only available if a user has logged in.
+- `this.props.userId` - the user's ID. Only available if a user has logged in.
+
+
+### Do I need to load a document?
+Absolutely not. While Appsby assumes that most of your app's work will involve CRUD on documents, you are by no means restricted to only using documents. For instance you might have a page which loads and processes third-party APIs on a server, and does not need to load a document.
+In order to do that, we simply don't set any of the `getInitialState` parameters in our `constructor()`. As you'd expect, this means that the document-specific `state` and `props`, and `autoSave` functionality will not be available in your view, as they have no data to load/save.
+
+## The database is fully abstracted
+An important concept to understand in Appsby, is that you don't work with the database manually. Instead, your documents and indexes are created and defined in your database when you use them in your Javascript.
+
+All you have to do to define a new type of document in your app is just declare somewhere that it exists. You might do this in an Appsby component's constructor like:
+```js
+this.getInitialState.documentType = 'user';
+```
+The above code is all we need to create a brand new **user** document type.
+
+### Dealing with schema
+
+It is important to note that schema in Appsby documents (and the underlying FaunaDB) is dynamic, like most document databases. This is what allows the above syntax to work. That means that we cannot guarantee the existence of certain schema or fields on a document directly. While that isn't always fantastic, it does mean that we can create schema dynamically as our requirements evolve without touching the database. If you want to create schema guarantees for your documents, you may want to create TypeScript types for your documents, or create a JavaScript type factory that will produce your document's default schema.
+
+### Creating and deleting documents
+
+Appsby provides one function for creating and one function for deleting documents. Like naming document types in component constructors, using create and delete functions will also define document types.
+
+To create a new document from anywhere within your app, use:
+```js
+AppsbyCreateSingleDocument('user', jsonData);
+```
+- The first argument, `user`, represents the document's type.
+- The second argument, `jsonData`, should be a JSON object. Data is stored in FaunaDB as key/value pairs. Data can of course, be nested, with multiple levels of arrays and objects.
+
+To delete a document from anywhere within your app, use:
+```js
+AppsbyDeleteSingleDocument('user', documentId);
+```
+- The first argument, `user`, represents the document's type.
+- The second argument, `documentId`, represents the document's internal ID. Documents cannot be deleted by fields, only by ID. Deleting an document via an internal field (where uniqueness can never be guaranteed) is an anti-pattern.
+
+### Updating documents with `setState()`
+
+Like React, Appsby makes `setState()` available to you, in an slightly altered form more suited to the Appsby paradigm and serverless computing in general.
+In Appsby, `setState()` is used to update a view's underlying document with new data. Whenever it is called, Appsby will:
+1. Apply any data passed through setState to the document's state.
+2. Update the underlying document on the database.
+3. Replace the current state with the database-fetched state, indicating that changes have been successful.
+
+You may call `setState()` inside any method on your views, and can use it to make multiple updates to a document within the lifecycle of a single request (should you need to do so).
+
+**One important differnece between Appsby's `setState()` and React, is that in Appsby, `setState()` does not trigger the `render()` function.** Instead, render will be called once your method concludes.
+
+### Updating documents with Appsby Auto-Save
+`setState()` makes the bridge between React and Appsby easier for React developers - but it is often not the most powerful way to update documents with Appsby.
+
+Appsby implements Auto-Save functionality, which works with the `return` from your own server-side functions in order to make document updating even easier.
+
+In a typical Appsby server-side function that uses `setState()`, you might create something like this:
+```js
+createSomeData = (data) => {
+    if (verifyPhoneNumber(data.userPhoneNumber)) {
+        this.state.phoneNumbers.push(parsePhoneNumberToCorrectFormat(data.userPhoneNumber));
+        this.setState();
+    }
+}
+```
+After your function has completed, `setState()` will use any data you pass in its arguments, and this.state from your class to overwrite the document's data. If `setState()` is never called, no overwrite occurs.
+If we want to bake overwriting into our function and write less code however, we can turn on Auto-Save.
+
+```js
+constructor(connectionParameters){
+    this.getInitialState.autoSave = true;
+}
+```
+
+Now we can update our document like this:
+```js
+createSomeData = (data) => {
+    if (verifyPhoneNumber(data.userPhoneNumber)) {
+        return { phoneNumber: parsePhoneNumberToCorrectFormat(data.userPhoneNumber) };
+    }
+}
+```
+
+By turning auto-save on, and returning our data as an object that is representative of one or more key/value pairs inside our document, Appsby will automatically update the document with our changes and return the result to the user.
+Even though we've only cut down on a few words in our current code, the amount of time saved grows exponentially as we start to perform more complex transformations, such as merges and deletes, which is where Appsby Auto-Save and the included Syntax Helpers really shine.
+
+
+### Making Auto-Save powerful with Appsby Syntax Helpers
+Making document updating fast and effortless was one of the key decisions behind designing and developing Appsby. Web apps that focus on user-generated content mostly need to allow users the ability to continually tweak and refine whatever they're working on. When this manifests in a multitude of different parameters and pieces of data that lead to transformation, your code re-use will often dwindle and you can very easily build substantial technical debt.
+
+In solving this, Appsby allows you to implement Appsby Syntax Helpers inside your `return` object's keys to perform complex JSON transformations faster, whilst sidestepping the need to remember and implement the multitude of often confusingly-named Object methods available in Javascript.
+
+These can then be used with auto-save turned on to save document changes painlessly.
+
+The following is a table of the **three** currently available Appsby Syntax Helpers. More Syntax Helpers will likely be added in the future.
+
+
+| JSON Key Extension | Type | Functionality | Example |
+|---|---|---|---|
+| * | prefix | You might want to send a key/value pair back to the client, but not save it. The * prefix tells Appsby to skip this key when saving changes. | \{ "*ResultText": "Action was successful." \} |
+| _&mergeArray | suffix | If you have arrays of objects inside your document, you probably want to add or update their values on it at some point. This suffix will merge your existing array (or a blank one if it doesn't exist) with your new data, preferencing new data over existing data. **Requires an "Id" field on every object in the array - this is an essential part of Appsby's diff checking.** | \{ "PhotoURLs_&mergeArray" : [\{Id: 1, data: "updatedurl.com"\}, \{ Id: 2, data: "newentry.com" \}] \} |
+| _&removeFromArray | suffix | If you have arrays of objects inside your document, you might want to delete its inner objects at some point. This suffix will delete one or more objects from an existing array. **Requires an "Id" field on every object in the array - this is an essential part of Appsby's diff checking, and how it will determine which objects to delete.** | \{ "PhotoURLs_&deleteArray" : [\{ Id: 1 \}, \{ Id: 2 \}] \} |
+
+**One more key point - Appsby Syntax Helpers are recursive.** This means that you can nest multiple helpers right down your JSON tree, and use all of the commands in combination with each other. This makes creating, updating and deleting deeply nested values easy.
+
+## Working with the Appsby Lifecycle
+The Appsby lifecycle is made up of the underlying processing methods that allow Appsby to work. Understanding how the lifecycle works will help you in debugging your methods, and understanding why certain pieces of data may or may not be returned to a client.
+
+### Internal routing check
+When a route is requested by the client, Appsby will first check the type of Appsby componentry requested (view/search/upload/etc). The request will then pass through an internal switch to try and match the requested route. If the route exists, the `constructor()` for that route will be invoked, and if not, Appsby will throw an error.
+
+### `constructor(connectionParams)` [optional]
+Appsby will start the process of re-hydrating the requested document once a route is found. It will use the class-scoped `getInitialState` object to do this.
+
+### `constructor() -> this.authenticator` [optional]
+This is a string that represents the location of an authenticator. If the user has logged in with this authenticator, they will pass this step, if not, they will be re-directed to the authenticator's client for login. This field is optional. If it is not used, Appsby will assume no authentication is needed for this component. **This field must be set within the constructor().**
+
+### `constructor() -> `

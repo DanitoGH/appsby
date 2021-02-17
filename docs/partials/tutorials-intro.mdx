@@ -1,0 +1,25 @@
+import { MDXTag } from '@mdx-js/tag'
+
+This tutorial assumes you've just downloaded the Appsby starter, but is pretty easy to follow as a general API reference.
+
+## Open `app-pages/`<MDXTag name="code">{props.folder}</MDXTag>`/client.js`
+
+
+Our client page is a React Component implemented as a class. Client pages can be implemented however you wish, as long as they have regular state (React hooks will not work). It is good practice to implement your app pages as classes, as the look and feel of the code on your client and server files will be similar.
+When creating new client pages manually, it is important to remember that Gatsby will only recognize the **default** export of the JavaScript file as the page. So when exporting, remember to change ```export``` to ```export default```.
+
+### Your client's ```componentDidMount()```
+It is standard practice in React (and Gatsby by extension) to connect to API endpoints that serve dynamic data inside the ```componentDidMount()``` method. Usually you might use ```fetch()```, or a library like ```Axios``` to retrieve such data. However, Appsby's client library will take care of the connection and state modification for us. To add an Appsby {props.fileType} to your client page, add the following:
+
+<MDXTag name="pre">
+{props.initializeName} = {props.clientSnippet};
+</MDXTag>
+
+- The first argument (<MDXTag name="code">{props.folder}</MDXTag>) tells Appsby which {props.fileType} to connect to.
+{props.usesThis ? <MDXTag name="li">The second argument (<MDXTag name="code">this</MDXTag>) gives Appsby direct access to your client, and allows it to use React's <MDXTag name="code">setState()</MDXTag>.</MDXTag> : null}
+{props.connectionParams ? <MDXTag name="li">The third argument (<MDXTag name="code">connectionParams</MDXTag>) allows you to pass your own values directly to the {props.fileType}. This could be the ID of a document, a page name, or something else.</MDXTag> : null}
+
+
+This code will create a new connection to the <MDXTag name="code">{props.folder}</MDXTag> folder's {props.fileType}. We can now access our {props.fileType} in our client view with <MDXTag name="code">{props.initializeName}</MDXTag>.
+
+
